@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
@@ -18,23 +19,27 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated()")
     public List<Cliente> getAllClientes(){
         return clienteService.getAllClientes();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Cliente> getClienteById(@PathVariable Long id){
         Cliente cliente =  clienteService.getClienteById(id);
         return ResponseEntity.ok(cliente);
     }
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente){
         Cliente nuevoCliente = clienteService.createOrUpdateCliente(cliente);
         return new ResponseEntity<>(nuevoCliente,HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Cliente> updateCliente(@PathVariable long id,@RequestBody Cliente clienteDetails){
         Cliente cliente =  clienteService.getClienteById(id);
         cliente.setNombre(clienteDetails.getNombre());
@@ -48,6 +53,7 @@ public class ClienteController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> deleteCliente(@PathVariable Long id){
         clienteService.deleteCliente(id);
         return ResponseEntity.noContent().build();

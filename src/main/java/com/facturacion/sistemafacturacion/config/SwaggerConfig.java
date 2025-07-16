@@ -25,11 +25,11 @@ public class SwaggerConfig {
                                 .email("warmo@email.com"))
                         .license(new License()
                                 .name("MIT")
-                                .url("https://opensource.org/licenses/MIT")))
-                .servers(List.of(
-                        new Server()
-                                .url("http://localhost:8080")
-                                .description("Servidor de desarrollo")
-                ));
+                                .url("https://opensource.org/licenses/MIT")));
+//                .servers(List.of(
+//                        new Server()
+//                                .url("http://localhost:8089")
+//                                .description("Servidor de desarrollo")
+//                ));
     }
 }
