@@ -1,5 +1,6 @@
 package com.facturacion.sistemafacturacion.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -22,6 +23,7 @@ public class DetalleFactura {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "factura_id", nullable = false)
+    @JsonBackReference
     private Factura factura;
 
     @ManyToOne(fetch = FetchType.LAZY)

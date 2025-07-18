@@ -1,5 +1,8 @@
 package com.facturacion.sistemafacturacion.controller;
 
+import com.facturacion.sistemafacturacion.dto.ProductoDTO;
+import com.facturacion.sistemafacturacion.mapper.ProductoMapper;
+import com.facturacion.sistemafacturacion.model.CategoriaProducto;
 import com.facturacion.sistemafacturacion.model.Producto;
 import com.facturacion.sistemafacturacion.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,54 +21,67 @@ public class ProductoController {
     @Autowired
     private ProductoService productoService;
 
+    @Autowired
+    private ProductoMapper productoMapper;
 
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public List<Producto> getAllProductos(){
-        return productoService.getAllProductos();
+    public List<ProductoDTO> getAllProductos() {
+        return productoService.getAllProductos()
+                .stream()
+                .map(productoMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Producto> getProductoById(@PathVariable Long id){
+    public ResponseEntity<ProductoDTO> getProductoById(@PathVariable Long id){
         Producto producto = productoService.getProductoById(id);
-        return ResponseEntity.ok(producto);
+        return ResponseEntity.ok(productoMapper.toDTO(producto));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Producto> createProducto(@RequestBody Producto producto){
-        Producto nuevoProducto = productoService.createOrUpdateProducto(producto);
-
-        return new ResponseEntity<>(nuevoProducto,HttpStatus.CREATED);
+    public ResponseEntity<ProductoDTO> createProducto(@RequestBody ProductoDTO productoDTO){
+        Producto producto = productoMapper.toEntity(productoDTO);
+        Producto guardado = productoService.createOrUpdateProducto(producto);
+        return new ResponseEntity<>(productoMapper.toDTO(guardado), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Producto> updateProducto(@PathVariable Long id,@RequestBody Producto productoDetails){
-        Producto producto = productoService.getProductoById(id);
-        producto.setNombre(productoDetails.getNombre());
-        producto.setCategoria(productoDetails.getCategoria());
-        producto.setCodigo(productoDetails.getCodigo());
-        producto.setDescripcion(productoDetails.getDescripcion());
-        producto.setPrecioUnitario(productoDetails.getPrecioUnitario());
-        producto.setStock(productoDetails.getStock());
-        Producto productoActualizado = productoService.createOrUpdateProducto(producto);
-        return ResponseEntity.ok(productoActualizado);
+    public ResponseEntity<ProductoDTO> updateProducto(@PathVariable Long id, @RequestBody ProductoDTO productoDTO) {
+        Producto productoExistente = productoService.getProductoById(id);
+
+        productoExistente.setNombre(productoDTO.getNombre());
+        productoExistente.setDescripcion(productoDTO.getDescripcion());
+        productoExistente.setPrecioUnitario(productoDTO.getPrecioUnitario());
+        productoExistente.setStock(productoDTO.getStock());
+
+        if (productoDTO.getCategoriaId() != null) {
+            CategoriaProducto categoria = new CategoriaProducto();
+            categoria.setId(productoDTO.getCategoriaId());
+            productoExistente.setCategoria(categoria);
+        }
+
+        Producto actualizado = productoService.createOrUpdateProducto(productoExistente);
+        return ResponseEntity.ok(productoMapper.toDTO(actualizado));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long id){
         productoService.deleteProducto(id);
-
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/buscar")
     @PreAuthorize("isAuthenticated()")
-    public List<Producto> searchProductos(@RequestParam String nombre) {
-        return productoService.searchProductosByNombre(nombre);
+    public List<ProductoDTO> searchProductos(@RequestParam String nombre) {
+        return productoService.searchProductosByNombre(nombre)
+                .stream()
+                .map(productoMapper::toDTO)
+                .toList();
     }
 
 }

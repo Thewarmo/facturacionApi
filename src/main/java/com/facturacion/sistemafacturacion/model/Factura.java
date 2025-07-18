@@ -1,5 +1,6 @@
 package com.facturacion.sistemafacturacion.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "facturas", schema = "facturacion")
+@NamedQuery(name = "Factura.findByCliente_Id", query = "SELECT f FROM Factura f WHERE f.cliente.id = :clienteId")
 public class Factura {
 
     @Id
@@ -42,6 +44,7 @@ public class Factura {
     private Usuario usuario;
 
     @OneToMany(mappedBy = "factura", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<DetalleFactura> detalles = new ArrayList<>();
 
     // Getters y Setters

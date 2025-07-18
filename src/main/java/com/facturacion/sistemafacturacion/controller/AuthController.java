@@ -3,6 +3,8 @@ package com.facturacion.sistemafacturacion.controller;
 import com.facturacion.sistemafacturacion.dto.AuthRequest;
 import com.facturacion.sistemafacturacion.dto.AuthResponse;
 import com.facturacion.sistemafacturacion.security.JwtService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Auth", description = "authorization methods")
 public class AuthController {
 
     @Autowired
@@ -25,6 +28,7 @@ public class AuthController {
     private  JwtService jwtService;
 
     @PostMapping("/login")
+    @Operation(summary = "Hacer la autorizacion")
     public ResponseEntity<AuthResponse> authenticate(@RequestBody AuthRequest request){
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())

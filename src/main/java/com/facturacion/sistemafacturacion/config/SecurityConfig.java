@@ -36,31 +36,22 @@ public class SecurityConfig {
     }
 
     @Bean
-   public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers(
-                "/v3/api-docs/**",
-                "/swagger-ui/**",
-                "/swagger-ui.html",
-                "/swagger-resources/**",
-                "/swagger-resources",
-                "/configuration/**",
-                "/webjars/**"
-        );
-    }
-
-    @Bean
-   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-            http
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz -> authz
-                                 .requestMatchers("/api/auth/**").permitAll()
-                                 // El resto de endpoints requieren autenticación
-                                 .anyRequest().authenticated()
-                             )
-                     .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-            return http.build();
+        return http.build();
     }
 
 }

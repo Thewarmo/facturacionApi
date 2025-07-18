@@ -1,35 +1,15 @@
-package com.facturacion.sistemafacturacion.model;
+package com.facturacion.sistemafacturacion.dto;
 
-import jakarta.persistence.*;
+public class ClienteDTO {
 
-@Entity
-@Table(name = "clientes", schema = "facturacion")
-@NamedQuery(name = "Cliente.findByRucCedula", query = "SELECT c FROM Cliente c WHERE c.rucCedula = :rucCedula")
-public class Cliente {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "nombre", nullable = false, length = 100)
     private String nombre;
-
-    @Column(name = "apellido", nullable = false, length = 100)
     private String apellido;
-
-    @Column(name = "ruc_cedula", nullable = false, unique = true, length = 20)
     private String rucCedula;
-
-    @Column(columnDefinition = "TEXT")
     private String direccion;
-
-    @Column(length = 100)
+    private String telefono;
     private String email;
 
-    @Column(length = 20)
-    private String telefono;
-
-    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -70,19 +50,19 @@ public class Cliente {
         this.direccion = direccion;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getTelefono() {
         return telefono;
     }
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

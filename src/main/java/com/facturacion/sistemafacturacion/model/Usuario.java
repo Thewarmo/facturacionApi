@@ -7,6 +7,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "usuarios", schema = "seguridad")
+@NamedQuery(name = "Usuario.findByUsername", query = "SELECT u FROM Usuario u WHERE u.username = :username")
 public class Usuario {
 
     @Id

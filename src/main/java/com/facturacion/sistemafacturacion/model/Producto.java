@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "productos", schema = "facturacion")
+@NamedQuery(name = "Producto.findByNombreContainingIgnoreCase", query = "SELECT p FROM Producto p WHERE lower(p.nombre) LIKE lower(concat('%', :nombre, '%'))")
 public class Producto {
 
     @Id

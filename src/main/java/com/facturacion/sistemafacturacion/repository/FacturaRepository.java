@@ -10,4 +10,6 @@ import java.util.List;
 public interface FacturaRepository extends  JpaRepository<Factura,Long> {
 
     List<Factura> findByCliente_Id(Long clienteId);
+
+    Factura findTopByOrderByIdDesc();
 }

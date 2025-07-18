@@ -1,5 +1,7 @@
 package com.facturacion.sistemafacturacion.controller;
 
+import com.facturacion.sistemafacturacion.dto.ClienteDTO;
+import com.facturacion.sistemafacturacion.mapper.ClienteMapper;
 import com.facturacion.sistemafacturacion.model.Cliente;
 import com.facturacion.sistemafacturacion.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,38 +20,45 @@ public class ClienteController {
     @Autowired
     private ClienteService clienteService;
 
+    @Autowired
+    private ClienteMapper clienteMapper;
+
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public List<Cliente> getAllClientes(){
-        return clienteService.getAllClientes();
+    public List<ClienteDTO> getAllClientes(){
+        return clienteService.getAllClientes()
+                .stream()
+                .map(clienteMapper::toDTO)
+                .toList();
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Cliente> getClienteById(@PathVariable Long id){
-        Cliente cliente =  clienteService.getClienteById(id);
-        return ResponseEntity.ok(cliente);
+    public ResponseEntity<ClienteDTO> getClienteById(@PathVariable Long id){
+        Cliente cliente = clienteService.getClienteById(id);
+        return ResponseEntity.ok(clienteMapper.toDTO(cliente));
     }
 
     @PostMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Cliente> createCliente(@RequestBody Cliente cliente){
-        Cliente nuevoCliente = clienteService.createOrUpdateCliente(cliente);
-        return new ResponseEntity<>(nuevoCliente,HttpStatus.CREATED);
+    public ResponseEntity<ClienteDTO> createCliente(@RequestBody ClienteDTO clienteDTO){
+        Cliente cliente = clienteMapper.toEntity(clienteDTO);
+        Cliente nuevo = clienteService.createOrUpdateCliente(cliente);
+        return new ResponseEntity<>(clienteMapper.toDTO(nuevo), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Cliente> updateCliente(@PathVariable long id,@RequestBody Cliente clienteDetails){
-        Cliente cliente =  clienteService.getClienteById(id);
-        cliente.setNombre(clienteDetails.getNombre());
-        cliente.setApellido(clienteDetails.getApellido());
-        cliente.setRucCedula(clienteDetails.getRucCedula());
-        cliente.setDireccion(clienteDetails.getDireccion());
-        cliente.setEmail(clienteDetails.getEmail());
-        cliente.setTelefono(clienteDetails.getTelefono());
-        Cliente updateCliente = clienteService.createOrUpdateCliente(cliente);
-        return ResponseEntity.ok(updateCliente);
+    public ResponseEntity<ClienteDTO> updateCliente(@PathVariable Long id, @RequestBody ClienteDTO clienteDTO) {
+        Cliente cliente = clienteService.getClienteById(id);
+        cliente.setNombre(clienteDTO.getNombre());
+        cliente.setApellido(clienteDTO.getApellido());
+        cliente.setDireccion(clienteDTO.getDireccion());
+        cliente.setTelefono(clienteDTO.getTelefono());
+        cliente.setEmail(clienteDTO.getEmail());
+
+        Cliente actualizado = clienteService.createOrUpdateCliente(cliente);
+        return ResponseEntity.ok(clienteMapper.toDTO(actualizado));
     }
 
     @DeleteMapping("/{id}")

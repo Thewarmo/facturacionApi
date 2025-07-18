@@ -25,8 +25,12 @@ public class ProductoService {
     }
 
     public Producto createOrUpdateProducto(Producto producto){
+        if (producto.getCodigo() == null || producto.getCodigo().isBlank()) {
+            producto.setCodigo(generarCodigoUnico());
+        }
         return productoRepository.save(producto);
     }
+
 
     public void deleteProducto(Long id){
         if(!productoRepository.existsById(id)){
@@ -37,6 +41,11 @@ public class ProductoService {
 
     public List<Producto> searchProductosByNombre(String nombre) {
         return productoRepository.findByNombreContainingIgnoreCase(nombre);
+    }
+
+    public String generarCodigoUnico() {
+        long total = productoRepository.count() + 1;
+        return String.format("PRD-%03d", total); // PRD-001, PRD-002, etc.
     }
 
 }
