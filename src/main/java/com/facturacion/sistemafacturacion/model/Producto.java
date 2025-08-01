@@ -1,8 +1,15 @@
 package com.facturacion.sistemafacturacion.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "productos", schema = "facturacion")
 @NamedQuery(name = "Producto.findByNombreContainingIgnoreCase", query = "SELECT p FROM Producto p WHERE lower(p.nombre) LIKE lower(concat('%', :nombre, '%'))")
@@ -24,66 +31,23 @@ public class Producto {
     @Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
     private BigDecimal precioUnitario;
 
+    @Column(name= "stock")
     private Integer stock;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_item", nullable = false)
+    private TipoItem tipoItem;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "categoria_id")
     private CategoriaProducto categoria;
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
+    @Column(name = "activo", nullable = false)
+    private boolean activo;
+
+    @PrePersist
+    public void prePersist() {
+        this.activo = true;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCodigo() {
-        return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getDescripcion() {
-        return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
-    }
-
-    public BigDecimal getPrecioUnitario() {
-        return precioUnitario;
-    }
-
-    public void setPrecioUnitario(BigDecimal precioUnitario) {
-        this.precioUnitario = precioUnitario;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public CategoriaProducto getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(CategoriaProducto categoria) {
-        this.categoria = categoria;
-    }
 }

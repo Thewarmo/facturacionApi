@@ -63,9 +63,14 @@ public class ClienteController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Void> deleteCliente(@PathVariable Long id){
+    public void deleteCliente(@PathVariable Long id) {
         clienteService.deleteCliente(id);
-        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<Long> obtenerTotalClientes(){
+        long total = clienteService.contarClientes();
+        return ResponseEntity.ok(total);
     }
 
 }

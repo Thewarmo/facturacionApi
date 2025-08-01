@@ -1,5 +1,6 @@
 package com.facturacion.sistemafacturacion.dto;
 
+import com.facturacion.sistemafacturacion.model.TipoItem;
 import java.math.BigDecimal;
 
 public class ProductoDTO {
@@ -10,6 +11,7 @@ public class ProductoDTO {
         private String descripcion;
         private BigDecimal precioUnitario;
         private Integer stock;
+        private TipoItem tipoItem;
         private Integer categoriaId;
 
     public Integer getCategoriaId() {
@@ -69,6 +71,14 @@ public class ProductoDTO {
 
     public void setStock(Integer stock) {
         this.stock = stock;
+    }
+
+    public TipoItem getTipoItem() {
+        return tipoItem;
+    }
+
+    public void setTipoItem(TipoItem tipoItem) {
+        this.tipoItem = tipoItem;
     }
 
     public String getCategoriaNombre() {

@@ -1,7 +1,14 @@
 package com.facturacion.sistemafacturacion.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class FacturaRequestDTO {
 
     private ClienteDTO cliente; // Ahora el cliente completo
@@ -10,28 +17,4 @@ public class FacturaRequestDTO {
 
     // Si ya obtienes el usuario del contexto, puedes omitir esto
     private Long usuarioId;
-
-    public ClienteDTO getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(ClienteDTO cliente) {
-        this.cliente = cliente;
-    }
-
-    public List<DetalleFacturaRequestDTO> getDetalles() {
-        return detalles;
-    }
-
-    public void setDetalles(List<DetalleFacturaRequestDTO> detalles) {
-        this.detalles = detalles;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
 }

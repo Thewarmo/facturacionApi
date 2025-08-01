@@ -16,6 +16,7 @@ public class ProductoMapper {
         dto.setDescripcion(producto.getDescripcion());
         dto.setPrecioUnitario(producto.getPrecioUnitario());
         dto.setStock(producto.getStock());
+        dto.setTipoItem(producto.getTipoItem());
 
         if (producto.getCategoria() != null) {
             dto.setCategoriaId(producto.getCategoria().getId());
@@ -32,6 +33,7 @@ public class ProductoMapper {
         producto.setDescripcion(dto.getDescripcion());
         producto.setPrecioUnitario(dto.getPrecioUnitario());
         producto.setStock(dto.getStock());
+        producto.setTipoItem(dto.getTipoItem());
 
         if (dto.getCategoriaId() != null) {
             CategoriaProducto categoria = new CategoriaProducto();

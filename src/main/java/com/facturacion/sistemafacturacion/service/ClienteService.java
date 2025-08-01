@@ -18,8 +18,8 @@ public class ClienteService {
     @Autowired
     private ClienteRepository clienteRepository;
 
-    public List<Cliente> getAllClientes(){
-        return clienteRepository.findAll();
+    public List<Cliente> getAllClientes() {
+        return clienteRepository.findAllByActivoTrue();
     }
 
     public Cliente getClienteById(Long id){
@@ -35,7 +35,13 @@ public class ClienteService {
         if (!clienteRepository.existsById(id)) {
             throw new ResourceNotFoundException("No se puede eliminar. Cliente no encontrado con el ID: " + id);
         }
-        clienteRepository.deleteById(id);
+        Cliente cliente = getClienteById(id);
+        cliente.setActivo(false);
+        clienteRepository.save(cliente);
+    }
+
+    public long contarClientes(){
+        return clienteRepository.count();
     }
 
 }

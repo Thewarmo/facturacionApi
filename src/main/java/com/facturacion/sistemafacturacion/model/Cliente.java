@@ -1,7 +1,14 @@
 package com.facturacion.sistemafacturacion.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "clientes", schema = "facturacion")
 @NamedQuery(name = "Cliente.findByRucCedula", query = "SELECT c FROM Cliente c WHERE c.rucCedula = :rucCedula")
@@ -29,60 +36,7 @@ public class Cliente {
     @Column(length = 20)
     private String telefono;
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
-    }
+    @Column(name = "activo", nullable = false)
+    private boolean activo = true;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getApellido() {
-        return apellido;
-    }
-
-    public void setApellido(String apellido) {
-        this.apellido = apellido;
-    }
-
-    public String getRucCedula() {
-        return rucCedula;
-    }
-
-    public void setRucCedula(String rucCedula) {
-        this.rucCedula = rucCedula;
-    }
-
-    public String getDireccion() {
-        return direccion;
-    }
-
-    public void setDireccion(String direccion) {
-        this.direccion = direccion;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
 }

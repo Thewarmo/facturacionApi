@@ -57,6 +57,7 @@ public class ProductoController {
         productoExistente.setDescripcion(productoDTO.getDescripcion());
         productoExistente.setPrecioUnitario(productoDTO.getPrecioUnitario());
         productoExistente.setStock(productoDTO.getStock());
+        productoExistente.setTipoItem(productoDTO.getTipoItem());
 
         if (productoDTO.getCategoriaId() != null) {
             CategoriaProducto categoria = new CategoriaProducto();
@@ -82,6 +83,12 @@ public class ProductoController {
                 .stream()
                 .map(productoMapper::toDTO)
                 .toList();
+    }
+
+    @GetMapping("/total")
+    public ResponseEntity<Long> totalProductos(){
+        long total = productoService.totalProductos();
+        return ResponseEntity.ok(total);
     }
 
 }
