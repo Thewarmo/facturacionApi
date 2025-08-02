@@ -1,17 +1,32 @@
-# Usa una imagen base de Java 21 (Eclipse Temurin es una opción recomendada y ligera)
-FROM eclipse-temurin:21-jre-jammy
+# --- Etapa 1: Construcción (Build) ---
+# Usamos una imagen de Maven con Java 21 para compilar el proyecto
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Establece el directorio de trabajo dentro del contenedor
+# Establecemos el directorio de trabajo
 WORKDIR /app
 
-# Copia el archivo JAR compilado de tu proyecto al contenedor
-# La ruta del JAR puede variar dependiendo de tu configuración de build.
-# Típicamente es target/<artifact-id>-<version>.jar
-# Usamos un comodín (*) para evitar problemas con el número de versión.
-COPY target/sistema-facturacion-*.jar app.jar
+# Copiamos el pom.xml y descargamos las dependencias primero para aprovechar el cache de Docker
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# Expone el puerto en el que la aplicación se ejecuta dentro del contenedor
+# Copiamos el resto del código fuente
+COPY src ./src
+
+# Compilamos la aplicación y creamos el .jar, saltando los tests
+RUN mvn package -DskipTests
+
+# --- Etapa 2: Ejecución (Run) ---
+# Usamos una imagen JRE (Java Runtime Environment) ligera para ejecutar la app
+FROM eclipse-temurin:21-jre-jammy
+
+# Establecemos el directorio de trabajo
+WORKDIR /app
+
+# Copiamos el archivo .jar que se creó en la etapa de 'build'
+COPY --from=build /app/target/sistema-facturacion-*.jar app.jar
+
+# Exponemos el puerto en el que corre la aplicación
 EXPOSE 8089
 
-# Comando para ejecutar la aplicación cuando el contenedor se inicie
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# El comando para iniciar la aplicación
+ENTRYPOINT ["java","-jar","app.jar"]
