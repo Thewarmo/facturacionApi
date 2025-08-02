@@ -56,4 +56,9 @@ public class AuthController {
 
         return ResponseEntity.ok(new AuthResponse(newAccessToken, refreshToken));
     }
+
+    @GetMapping("/")
+    public String index() {
+        return "🚀 API Facturación corriendo correctamente";
+    }
 }
