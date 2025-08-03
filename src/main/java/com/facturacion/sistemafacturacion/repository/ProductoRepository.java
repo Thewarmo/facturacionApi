@@ -29,7 +29,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     long count();
 
-    @Query("SELECT COUNT(*) as count FROM facturacion.productos WHERE activo = true")
+    @Query("SELECT COUNT(p) FROM Producto p WHERE p.activo = true")
     long countByActivo();
 
 }
