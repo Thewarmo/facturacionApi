@@ -41,7 +41,7 @@ public class ClienteService {
     }
 
     public long contarClientes(){
-        return clienteRepository.count();
+        return clienteRepository.countByActivo();
     }
 
 }
