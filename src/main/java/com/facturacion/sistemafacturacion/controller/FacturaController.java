@@ -69,7 +69,7 @@ public class FacturaController {
     }
 
    @PutMapping("/{id}/anular")
-   @PreAuthorize("hasRole('ADMIN')")
+   @PreAuthorize("isAuthenticated()")
    public ResponseEntity<Void> anularFactura(@PathVariable Long id) {
         facturaService.anularFactura(id);
         return ResponseEntity.noContent().build();
