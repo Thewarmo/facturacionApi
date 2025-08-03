@@ -87,7 +87,7 @@ public class ProductoService {
     }
 
     public long totalProductos(){
-        return productoRepository.count();
+        return productoRepository.countByActivo();
     }
 
 
