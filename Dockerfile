@@ -1,5 +1,4 @@
 # --- Etapa 1: Construcción (Build) ---
-# Usamos una imagen de Maven con Java 21 para compilar el proyecto
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 # Establecemos el directorio de trabajo
@@ -12,21 +11,53 @@ RUN mvn dependency:go-offline
 # Copiamos el resto del código fuente
 COPY src ./src
 
-# Compilamos la aplicación y creamos el .jar, saltando los tests
-RUN mvn package -DskipTests
+# Compilamos la aplicación optimizada para producción
+RUN mvn package -DskipTests \
+    -Dspring-boot.build-image.skip=true \
+    -Dmaven.javadoc.skip=true \
+    -Dmaven.source.skip=true
 
-# --- Etapa 2: Ejecución (Run) ---
-# Usamos una imagen JRE (Java Runtime Environment) ligera para ejecutar la app
+# --- Etapa 2: Extracción de capas (para mejor caching) ---
+FROM eclipse-temurin:21-jre-jammy AS layers
+WORKDIR /app
+COPY --from=build /app/target/sistema-facturacion-*.jar app.jar
+# Extraemos las capas del JAR para mejor caching
+RUN java -Djarmode=layertools -jar app.jar extract
+
+# --- Etapa 3: Ejecución (Run) ---
 FROM eclipse-temurin:21-jre-jammy
+
+# Instalamos curl para health checks
+RUN apt-get update && apt-get install -y --no-install-recommends curl && \
+    rm -rf /var/lib/apt/lists/* && apt-get clean
+
+# Creamos un usuario no-root por seguridad
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
 
 # Establecemos el directorio de trabajo
 WORKDIR /app
 
-# Copiamos el archivo .jar que se creó en la etapa de 'build'
-COPY --from=build /app/target/sistema-facturacion-*.jar app.jar
+# Copiamos las capas extraídas en orden de menos a más probable de cambiar
+COPY --from=layers --chown=appuser:appuser /app/dependencies/ ./
+COPY --from=layers --chown=appuser:appuser /app/spring-boot-loader/ ./
+COPY --from=layers --chown=appuser:appuser /app/snapshot-dependencies/ ./
+COPY --from=layers --chown=appuser:appuser /app/application/ ./
 
-# Exponemos el puerto en el que corre la aplicación
-EXPOSE 8089
+# Cambiamos al usuario no-root
+USER appuser
 
-# El comando para iniciar la aplicación
-ENTRYPOINT ["java","-jar","app.jar"]
+# Exponemos el puerto (usa PORT de Render, defaultea a 8080)
+EXPOSE ${PORT:-8080}
+
+# Variables de entorno optimizadas para Render
+ENV JAVA_OPTS="-XX:+UseContainerSupport \
+               -XX:MaxRAMPercentage=70.0 \
+               -XX:+UseG1GC \
+               -XX:+UseStringDeduplication \
+               -XX:+OptimizeStringConcat \
+               -Djava.awt.headless=true \
+               -Djava.security.egd=file:/dev/./urandom \
+               -Dspring.profiles.active=prod"
+
+# Comando optimizado para Render
+ENTRYPOINT exec java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher
