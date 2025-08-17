@@ -45,6 +45,9 @@ public class Producto {
     @Column(name = "activo", nullable = false)
     private boolean activo;
 
+    @Column(name = "url_imagen", length = 500)
+    private String urlImagen;
+
     @PrePersist
     public void prePersist() {
         this.activo = true;
