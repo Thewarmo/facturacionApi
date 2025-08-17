@@ -15,7 +15,9 @@ COPY src ./src
 RUN mvn package -DskipTests \
     -Dspring-boot.build-image.skip=true \
     -Dmaven.javadoc.skip=true \
-    -Dmaven.source.skip=true
+    -Dmaven.source.skip=true \
+    -Dproject.build.sourceEncoding=UTF-8 \
+    -Dproject.reporting.outputEncoding=UTF-8
 
 # --- Etapa 2: Extracción de capas (para mejor caching) ---
 FROM eclipse-temurin:21-jre-jammy AS layers
